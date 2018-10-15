@@ -1,0 +1,71 @@
+aux.h - Includes de los programas 
+ejes.cc/h - Clase Ejes, creo que no se toca, solamente es para la visualizacion de
+los ejes en el programa
+escena.cc/h - Hay que completarlo.
+
+-glColor{34}{ifd}{v} para fijar el color con el que aparecerán las primitivas de cualquier tipo, el color en RGB o RGBA que se pase será el que se use para las siguientes primitivas, hasta que se indique otro color distinto
+
+-glLineWidth() -> ancho (en pixeles) de las líneas
+
+-glPointSize() -> ancho (en pixeles) de los puntos
+
+-glPolygonMode(cara, modo) : para cambiar el modo de visualización de primitivas de tipo polígono, po-
+nerlo en modo puntos, líneas o relleno (sólido). Se indica que los polígonos (primitivas GL_TRIANGLES,
+GL_TRIANGLE_STRIP, GL_POLYGON, GL_QUADS, GL_QUADSTRIP) se han de dibujar de un
+modo concreto por la cara indicada
+
+-glShadeModel para fijar el modo de shading (sombreado) en modo plano (flat) (cada primi-
+tiva se visualiza con un único color en todos los pixel en los que se proyecta, no con degrada-
+dos). Es necesario asegurarnos que, al menos para esta práctica, el modo de sombreado esté
+fijado en modo plano antes de visualizar las primitivas.
+
+-glVertex{2,3,4}{b,s,i,f,d,ub,us,ui}{v} -> manda los vertices de uno en uno
+
+-void glVertexPointer (GLint size, GLenum type, GLsizei stride, constGLvoid * pointer);
+	size Número de coordenadas por vértice: 2, 3 o 4.
+	
+	type Tipo de cada coordenada del array (GL_SHORT, GL_INT, GL_FLOAT, o GL_DOUBLE)
+
+	stride Offset en bytes entre dos vertices consecutivos. Si es 0, se entiende que los vértices
+	están consecutivos.
+
+	pointer Puntero a la primera coordenada del primer vértice del array.
+
+- glEnableClientState(GL_VERTEX_ARRAY); -> habilitar uso de un array de vértices
+
+-void glDrawArrays(GLenum mode, GLint first, GLsizei count); -> un array con las coordenadas de los vértices, y en el momento de dibujar, pasar todos en bloque a la tarjeta gráfica
+
+PARÁMETROS
+mode.	Especifica cómo interpreter la secuencia de datos ( GL_POINTS,
+		GL_LINE_STRIP,GL_LINE_LOOP,		GL_LINES, GL_LINE_STRIP_ADJACENCY,
+		GL_LINES_ADJACENCY,		GL_TRIANGLE_STRIP,		GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY		o GL_PATCHES)
+
+first Especifica el índice inicial de los array habilitados
+
+count Especifica el número de elementos del array que se van a usar
+
+-void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices);
+
+	mode Especifica qué primitivas se van a dibujar: GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES,
+	GL_LINE_STRIP_ADJACENCY, GL_LINES_ADJACENCY, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN,
+	GL_TRIANGLES, GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY o GL_PATCHES
+	
+	count Número de elementos que se van a dibujar
+
+	type Tipo de los indices ( GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, o GL_UNSIGNED_INT)
+
+	indices Puntero al vector donde están los índices almacenados.
+
+** COLORES **
+- Dibujar las mallas indexadas usando un vector de colores de vertices de forma que se
+	pueda asociar colores a vertices cuando se visualiza con gldrawelements. Este vector tiene
+	una entrada por cada vertice de la malla y esa tupla permite asociar un colo a cada vertice
+- Para indicar donde esta el array se usa glColorPointer y para habilitar el su uso se usa
+	glEnableClientState
+
+******************
+** MODO AJEDREZ **
+******************
+
+- 2 llamadas al gldrawelements por cada malla
+

@@ -1,0 +1,12 @@
+tiene 2 partes:
+
+- hacer un ply (tiene un constructor) llena la lista de caras y vertices.
+- una nueva clase (objeto de revolucion): tiene
+		- 2 constructores: a uno le pasamos un script ply donde le pasamos los vertices. y el otro tiene un vector de vertices.
+		- va a rellenar la arista de caras y la lista de vertices revolucionando los vertices alrededor del eje y (es cçaconsejable añadir un metodo privado revoluciona perfil), una vez que tenga mi perfil llamo a revolucionar perfil numero de segmentos y relllenao los vertices. 
+
+para hacerlo de fortma optima nuestro algoritmo de revolucion detecta etapas, el primero y el ultimo los ignora y no trabaj con ellos. Cada punto hay que calcular su posicion resultante al rotar y los voy a ir metiendo en un vector y al final añado la tapa superior e inferior. hay que rotar el primero en plan ir rotandolo alfa cada vez
+
+- al constructor le tenemos que dar la oportunidad de que tenga tapa superior o/e inferior: si me dicen que quieren tapa pues llama al trozo de codigo que hace la tap correspondiente
+
+- glEnable(GL_CULL_FACE) para eliminar cara ocultas las caras al reves no las pinta, hay que activarlo ya
