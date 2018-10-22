@@ -33,13 +33,19 @@ class Escena
        modo = 0,           // modo actual -> 0:puntos 1:alambre 2:solido 3:ajedrez
        num_objetos   = 0 ; // número de objetos (actualizado al crear los objetos en el constructor)
 
-   bool ajedrez = false,
-        visual_inmed = true; //Si esta a true pinta la malla en modo inmediato
-                             // sino la pinta en modo diferido
+   bool usar_diferido = true; //Si esta a true pinta la malla en modo diferido
+                            // sino la pinta en modo inmediato
 
    // Objetos de la escena
-   Cubo * cubo = nullptr ; // es importante inicializarlo a 'nullptr'
-   Tetraedro * tetraedro = nullptr ;
+   //Cubo * cubo = nullptr ; // es importante inicializarlo a 'nullptr'
+   //Tetraedro * tetraedro = nullptr ;
+   ObjPLY * obj_ply = nullptr;
+   ObjRevolucion * obj_rev1 = nullptr;
+   ObjRevolucion * obj_rev2 = nullptr;
+   ObjRevolucion * obj_rev3 = nullptr;
+   Cilindro * cilindro = nullptr;
+   Cono * cono = nullptr;
+   Esfera * esfera = nullptr;
 
    // completar: añadir punteros a tetraedro u otros (práctica 1),
    //            y a un objeto PLY y de revolución (práctica 2),

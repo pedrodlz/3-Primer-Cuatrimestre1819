@@ -24,21 +24,21 @@ class ObjMallaIndexada
 {
    public:
 
+   // función que redibuja el objeto
+   // está función llama a 'draw_MI' (modo inmediato)
+   // o bien a 'draw_MD' (modo diferido, VBOs)
+   void draw(int modo_visu, bool usar_diferido) ;
+
+   protected:
+
    // dibuja el objeto en modo inmediato
    void draw_ModoInmediato();
 
    // dibuja el objeto en modo diferido (usando VBOs)
    void draw_ModoDiferido();
 
-   // función que redibuja el objeto
-   // está función llama a 'draw_MI' (modo inmediato)
-   // o bien a 'draw_MD' (modo diferido, VBOs)
-   void draw() ;
-
    // dibuja el objeto en modo ajedrez
    void draw_Ajedrez();
-
-   protected:
 
    void calcular_normales() ; // calcula tabla de normales de vértices (práctica 3)
    GLuint CrearVBO( GLuint tipo_vbo, GLuint tamanio_bytes, GLvoid * puntero_ram );
@@ -95,8 +95,35 @@ class ObjPLY : public ObjMallaIndexada
 
 class ObjRevolucion : public ObjMallaIndexada
 {
-   public:
-      ObjRevolucion( const std::string & nombre_ply_perfil );
+    public:
+      ObjRevolucion(){};
+      //tapa_tipo-> 0:dos tapas, 1:tapa superior,2:tapa inferior,3:ninguna
+      ObjRevolucion( const std::string & nombre_ply_perfil,const int tapa_tipo );
+      ObjRevolucion( const std::vector<Tupla3f> & vertices_perfil,const int tapa_tipo );
+
+    protected:
+        void crearMalla( const std::vector<Tupla3f> & perfil_original,
+            const int num_instancias_perf,const int tapa_tipo ) ;
+    private:
+        Tupla3f revolucionaPerfil( Tupla3f vertice_rotar,double alfa);
+} ;
+
+class Cilindro : public ObjRevolucion
+{
+    public:
+        Cilindro( const int num_vert_perfil, const int num_instancias_perf );
+} ;
+
+class Cono : public ObjRevolucion
+{
+    public:
+        Cono( const int num_vert_perfil, const int num_instancias_perf );
+} ;
+
+class Esfera : public ObjRevolucion
+{
+    public:
+        Esfera( const int num_vert_perfil, const int num_instancias_perf );
 } ;
 
 #endif

@@ -10,19 +10,28 @@
 
 Escena::Escena()
 {
-    Front_plane       = 50.0;
-    Back_plane        = 2000.0;
-    Observer_distance = 4*Front_plane;
+    glEnable(GL_CULL_FACE);
+
+    Front_plane = 0.1;
+    Back_plane = 2000.0;
+    Observer_distance = 2.0;
     Observer_angle_x  = 0.0 ;
     Observer_angle_y  = 0.0 ;
 
     ejes.changeAxisSize( 5000 );
 
     // crear los objetos de las prácticas: Mallas o Jerárquicos....
-    cubo = new Cubo();
-    tetraedro = new Tetraedro();
+    //cubo = new Cubo();
+    //tetraedro = new Tetraedro();
+    obj_ply = new ObjPLY("./plys/beethoven.ply");
+    obj_rev1 = new ObjRevolucion("./plys/peon.ply",0);
+    obj_rev2 = new ObjRevolucion("./plys/lata-pcue.ply",0);
+    obj_rev3 = new ObjRevolucion("./plys/lata-psup.ply",0);
+    cilindro = new Cilindro(2,20);
+    cono = new Cono(2,20);
+    esfera = new Esfera(30,20);
 
-    num_objetos = 2 ; // se usa al pulsar la tecla 'O' (rotar objeto actual)
+    num_objetos = 7 ; // se usa al pulsar la tecla 'O' (rotar objeto actual)
 }
 
 //**************************************************************************
@@ -37,11 +46,7 @@ void Escena::inicializar( int UI_window_width, int UI_window_height )
 
 	glEnable( GL_DEPTH_TEST );	// se habilita el z-bufer
 
-	Width  = UI_window_width/10;
-	Height = UI_window_height/10;
-
-   change_projection( float(UI_window_width)/float(UI_window_height) );
-	glViewport( 0, 0, UI_window_width, UI_window_height );
+	redimensionar( UI_window_width, UI_window_height );
 }
 
 // **************************************************************************
@@ -57,47 +62,59 @@ void Escena::dibujar_objeto_actual()
    //    llamar glPolygonMode, glColor... (y alguna cosas más), según dicho modo
    // .........completar (práctica 1)
 
-   switch(modo)
-   {
-       case 0:
-           glPointSize(3);
-           glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-           break;
-       case 1:
-           glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-           break;
-       case 2:
-           glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-           break;
-       case 3:
-           ajedrez = true;
-           break;
-   }
+   glColor3f(0,0,0);
+   glPointSize(3);
 
    // (2) dibujar el objeto actual usando método 'draw' del objeto asociado al
    // valor entero en 'objeto_actual'
 
    switch( objeto_actual )
    {
-      case 0:
+
+       case 0:
+           if ( obj_ply != nullptr ){
+               obj_ply->draw(modo,usar_diferido);
+           }
+           break ;
+          /*
          if ( cubo != nullptr ){
-             if(ajedrez){
-                 cubo->draw_Ajedrez();
-                 ajedrez = false;
-             }
-             else if (visual_inmed) cubo->draw_ModoInmediato() ;
-             else cubo->draw_ModoDiferido();
+             cubo->draw(modo,usar_diferido);
          }
-         break ;
+         break ;*/
       case 1:
+          if ( obj_rev1 != nullptr ){
+              obj_rev1->draw(modo,usar_diferido);
+          }
+          break ;
+        /*
          if ( tetraedro != nullptr ){
-             if(ajedrez){
-                 tetraedro->draw_Ajedrez();
-                 ajedrez = false;
-             }
-             else if (visual_inmed) tetraedro->draw_ModoInmediato() ;
-             else tetraedro->draw_ModoDiferido();
-         }
+             tetraedro->draw(modo,usar_diferido);
+         }*/
+      case 2:
+          if ( obj_rev2 != nullptr ){
+              obj_rev2->draw(modo,usar_diferido);
+          }
+          break;
+      case 3:
+          if ( obj_rev3 != nullptr ){
+              obj_rev3->draw(modo,usar_diferido);
+          }
+          break;
+      case 4:
+          if ( cilindro != nullptr ){
+              cilindro->draw(modo,usar_diferido);
+          }
+          break;
+      case 5:
+          if ( cono != nullptr ){
+            cono->draw(modo,usar_diferido);
+          }
+          break;
+      case 6:
+          if ( esfera != nullptr ){
+              esfera->draw(modo,usar_diferido);
+          }
+          break;
       default:
          cout << "draw_object: el número de objeto actual (" << objeto_actual << ") es incorrecto." << endl ;
          break ;
@@ -146,7 +163,7 @@ bool Escena::teclaPulsada( unsigned char tecla, int x, int y )
             break;
         case 'V' :
             //Cambiar modo draw
-            visual_inmed = -visual_inmed;
+            usar_diferido = !usar_diferido;
             break ;
         case 'Q' :
             // salir
@@ -195,8 +212,9 @@ void Escena::change_projection( const float ratio_xy )
 {
    glMatrixMode( GL_PROJECTION );
    glLoadIdentity();
-   const float wx = float(Height)*ratio_xy ;
-   glFrustum( -wx, wx, -Height, Height, Front_plane, Back_plane );
+   const float wy = 0.84*Front_plane,
+   wx = ratio_xy*wy ;
+   glFrustum( -wx, +wx, -wy, +wy, Front_plane, Back_plane );
 }
 //**************************************************************************
 // Funcion que se invoca cuando cambia el tamaño de la ventana
@@ -204,10 +222,10 @@ void Escena::change_projection( const float ratio_xy )
 
 void Escena::redimensionar( int newWidth, int newHeight )
 {
-   Width  = newWidth/10;
-   Height = newHeight/10;
-   change_projection( float(newWidth)/float(newHeight) );
-   glViewport( 0, 0, newWidth, newHeight );
+    Width = newWidth;
+    Height = newHeight;
+    change_projection( float(Width)/float(Height) );
+    glViewport( 0, 0, Width, Height );
 }
 
 //**************************************************************************
@@ -220,6 +238,6 @@ void Escena::change_observer()
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
    glTranslatef( 0.0, 0.0, -Observer_distance );
-   glRotatef( Observer_angle_y, 0.0 ,1.0, 0.0 );
-   glRotatef( Observer_angle_x, 1.0, 0.0, 0.0 );
+   glRotatef( Observer_angle_x, 1.0 ,0.0, 0.0 );
+   glRotatef( Observer_angle_y, 0.0, 1.0, 0.0 );
 }

@@ -59,10 +59,30 @@ void ObjMallaIndexada::draw_ModoDiferido()
 // Función de visualización de la malla,
 // puede llamar a  draw_ModoInmediato o bien a draw_ModoDiferido
 
-void ObjMallaIndexada::draw()
+void ObjMallaIndexada::draw(int modo_visu, bool usar_diferido)
 {
-    draw_ModoInmediato();
-    //draw_ModoDiferido();
+    if(vertices.empty()) std::cout << "VACIO" << std::endl;
+
+    switch(modo_visu)
+    {
+        case 0:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+            break;
+        case 1:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            break;
+        case 2:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            break;
+        case 3:
+            draw_Ajedrez();
+            break;
+    }
+
+    if(modo_visu!=3){
+        if(usar_diferido) draw_ModoDiferido();
+        else draw_ModoInmediato();
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -78,8 +98,6 @@ void ObjMallaIndexada::draw_Ajedrez()
         else triangulos_2.push_back(triangulos[i]);
     }
 
-    //Primero seleccionamos un color
-    glColor3f(0.9,0.21,0.86);
 
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer( 3, GL_FLOAT, 0, vertices.data() ) ;
@@ -131,7 +149,7 @@ GLuint ObjMallaIndexada::CrearVBO( GLuint tipo_vbo, GLuint tamanio_bytes, GLvoid
 Cubo::Cubo()
 {
 
-    float tamanio = 50;
+    float tamanio = 0.5;
 
    // inicializar la tabla de vértices
    vertices =  {  { -tamanio, -tamanio, -tamanio }, // 0
@@ -165,7 +183,7 @@ Cubo::Cubo()
 
 Tetraedro::Tetraedro()
 {
-    float tamanio = 50;
+    float tamanio = 0.5;
 
     // inicializar la tabla de vértices
     vertices =  {  { 0, -tamanio, -tamanio }, // 0
@@ -194,6 +212,7 @@ ObjPLY::ObjPLY( const std::string & nombre_archivo )
 {
    // leer la lista de caras y vértices
    ply::read( nombre_archivo, vertices, triangulos );
+
 }
 
 
@@ -207,7 +226,156 @@ ObjPLY::ObjPLY( const std::string & nombre_archivo )
 // *****************************************************************************
 // objeto de revolución obtenido a partir de un perfil (en un PLY)
 
-ObjRevolucion::ObjRevolucion( const std::string & nombre_ply_perfil )
+ObjRevolucion::ObjRevolucion( const std::string & nombre_ply_perfil,
+    const int tapa_tipo )
 {
-   // completar ......(práctica 2)
+    int num_instancias = 20;
+
+    std::vector<Tupla3f> vertices_tmp;
+    ply::read_vertices(nombre_ply_perfil,vertices_tmp);
+    crearMalla(vertices_tmp,num_instancias,tapa_tipo);
+}
+
+// *****************************************************************************
+// objeto de revolución obtenido a partir de un vector de vertices
+
+ObjRevolucion::ObjRevolucion( const std::vector<Tupla3f> & vertices_perfil,
+    const int tapa_tipo )
+{
+    int num_instancias = 20;
+
+    crearMalla(vertices_perfil,num_instancias,tapa_tipo);
+}
+
+// *****************************************************************************
+// aplica la rotacion a un vertice pasado como argumento
+
+Tupla3f ObjRevolucion::revolucionaPerfil(Tupla3f vertice_rotar, double alfa)
+{
+    Tupla3f vertice_res;
+
+    vertice_res(0) = ((vertice_rotar(0) * cos(alfa)) + (vertice_rotar(2)*sin(alfa)));
+    vertice_res(1) = vertice_rotar(1);
+    vertice_res(2) = ((vertice_rotar(0)*(-sin(alfa))) + (vertice_rotar(2)*cos(alfa)));
+
+    return vertice_res;
+}
+
+// *****************************************************************************
+// añade los nuevos vertices tras la rotacion y añade las caras y las tapas si
+// las tiene
+
+void ObjRevolucion::crearMalla(const std::vector<Tupla3f> & perfil_original,
+    const int num_instancias_perf, const int tapa_tipo )
+{
+    const double PI = 3.1415926545;
+    int num_vert_perfil = perfil_original.size(), a, b,c;
+    double alfa = 0;
+
+    //Añade los vertices tras la rotacion
+    for(int i = 0; i < num_instancias_perf; i++){
+        for(int j = 0; j < num_vert_perfil; j++){
+            double alfa_r = (2*PI*i)/num_instancias_perf;
+            vertices.push_back(revolucionaPerfil(perfil_original[j],alfa_r));
+        }
+    }
+
+    //Añade las caras
+    for(int i = 0; i < num_instancias_perf; i ++){
+        for(int j = 0; j < num_vert_perfil - 1; j++){
+            a = (num_vert_perfil*i) + j;
+            b = (num_vert_perfil*((i+1)%num_instancias_perf)) + j;
+            triangulos.push_back({a,b,b+1});
+            triangulos.push_back({a,b+1,a+1});
+        }
+    }
+
+    //Primero comprueba que se quiera al menos una tapa
+    if(tapa_tipo < 3 && tapa_tipo >= 0){
+
+        if (tapa_tipo == 0){//Añade vertices con y == 0
+            vertices.push_back({0,perfil_original[0](1),0});
+            vertices.push_back({0,perfil_original[num_vert_perfil-1](1),0});
+        }
+        else if(tapa_tipo == 1){//Solo añade el vertice superior con y == 0
+            vertices.push_back(perfil_original[0]);
+            vertices.push_back({0,perfil_original[num_vert_perfil-1](1),0});
+        }
+        else if(tapa_tipo == 2){//Solo añade el vertice inferior con y == 0
+            vertices.push_back({0,perfil_original[0](1),0});
+            vertices.push_back(perfil_original[num_vert_perfil-1]);
+        }
+
+        //Tapa inferior
+        if(tapa_tipo != 1){
+
+            a = num_instancias_perf*num_vert_perfil;
+
+            for(int i = 0; i < num_instancias_perf; i++){
+                b = num_vert_perfil*i;
+                c = (num_vert_perfil*((i+1)%num_instancias_perf));
+                triangulos.push_back({a,b,c});
+            }
+        }
+
+        //Tapa superior
+        if(tapa_tipo != 2){
+            a = (num_instancias_perf*num_vert_perfil) + 1;
+
+            for(int i = 0; i < num_instancias_perf; i++){
+                b = (num_vert_perfil*(i+1)) - 1;
+                c = (num_vert_perfil*(((i+1)%num_instancias_perf)+1)) - 1;
+                triangulos.push_back({a,b,c});
+            }
+        }
+    }
+}
+
+// *****************************************************************************
+//
+// Clase Cilindro (práctica 2)
+//
+// *****************************************************************************
+
+Cilindro::Cilindro(const int num_vert_perfil, const int num_instancias_perf ){
+
+    std::vector<Tupla3f> perfil;
+    perfil.push_back({0.5,-1,0});
+    perfil.push_back({0.5,1,0});
+
+    crearMalla(perfil,num_instancias_perf,0);
+}
+
+// *****************************************************************************
+//
+// Clase Cono (práctica 2)
+//
+// *****************************************************************************
+
+Cono::Cono(const int num_vert_perfil, const int num_instancias_perf ){
+
+    std::vector<Tupla3f> perfil;
+    perfil.push_back({0.5,-0.75,0});
+    perfil.push_back({0,0.75,0});
+
+    crearMalla(perfil,num_instancias_perf,2);
+}
+
+// *****************************************************************************
+//
+// Clase Esfera (práctica 2)
+//
+// *****************************************************************************
+
+Esfera::Esfera(const int num_vert_perfil, const int num_instancias_perf ){
+
+    std::vector<Tupla3f> perfil;
+    int radio = 1;
+
+    for (int i = 0; i < num_vert_perfil; i++) {
+        float y = radio * (-1 + (float) 2 * i / (num_vert_perfil - 1));
+        perfil.push_back({sqrt(radio * radio - y * y), y, 0.0});
+    }
+
+    crearMalla(perfil,num_instancias_perf,3);
 }
