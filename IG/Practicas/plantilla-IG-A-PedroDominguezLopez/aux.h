@@ -23,6 +23,8 @@
 #include <string>   // std::string
 #include <vector>   // std::vector
 
+void funcion_desocupado() ;
+
 #ifdef LINUX
 #  include <GL/glew.h> // en linux: incluye GL.h
 #  include <GL/glut.h> // GLUT (gestión de ventanas)

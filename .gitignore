@@ -5,3 +5,5 @@
 *.zip
 *.tar.gz
 *.tar.xz
+*.o
+./DDSI/DDSI_Practicas_1819

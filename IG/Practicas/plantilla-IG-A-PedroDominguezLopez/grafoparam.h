@@ -23,7 +23,7 @@ class GrafoParam
    GrafoParam();
 
    // función principal de visualización
-   void draw( const ModoVis p_modo_vis, const bool p_usar_diferido );
+   void draw( const int p_modo_vis, const bool p_usar_diferido );
 
    // actualizar valor efectivo de un parámetro (a partir de su valor no acotado)
    void actualizarValorEfe( const unsigned iparam, const float valor_na );
@@ -44,7 +44,7 @@ class GrafoParam
    Cubo *     cubo     = nullptr ;
 
    // parámetros de la llamada actual (o última) a 'draw'
-   ModoVis modo_vis ;      // modo de visualización
+   int modo_vis ;      // modo de visualización
    bool    usar_diferido ; // modo de envío (true -> diferido, false -> inmediato)
 
 

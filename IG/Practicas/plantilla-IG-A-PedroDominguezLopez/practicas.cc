@@ -78,7 +78,6 @@ void normal_keys( unsigned char tecla, int x, int y )
 // codigo de la tecla
 // posicion x del raton
 // posicion y del raton
-
 //***************************************************************************
 
 void special_keys( int tecla, int x, int y )
@@ -86,6 +85,18 @@ void special_keys( int tecla, int x, int y )
 	if (escena!=NULL)
 		escena->teclaEspecial( tecla, x, y );
 	glutPostRedisplay();
+}
+
+//***************************************************************************
+// Función gestora del evento desocupado (idle event)
+//
+// se invocará al método mgeDesocupado de la clase Escena.
+// Si la escena no hubiera sido creada al ser llamado, no hace nada.
+//***************************************************************************
+
+void funcion_desocupado()
+{
+	if(escena != nullptr) escena->mgeDesocupado();
 }
 
 //***************************************************************************
@@ -123,7 +134,7 @@ int main( int argc, char **argv )
    glutInitWindowSize(UI_window_width,UI_window_height);
 
    // llamada para crear la ventana, indicando el titulo
-   glutCreateWindow("Practicas IG: Pedro Domínguez López");
+   glutCreateWindow("Practicas IG: Pedro Dominguez Lopez");
 
    // asignación de la funcion llamada "dibujar" al evento de dibujo
    glutDisplayFunc( draw_scene );

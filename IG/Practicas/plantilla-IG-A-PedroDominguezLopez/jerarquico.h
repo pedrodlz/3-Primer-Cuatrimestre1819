@@ -28,7 +28,7 @@ class ObjJerarquico
       ObjJerarquico();
 
       // visualizar el objeto, usando los valores actuales de los parámetros
-      void draw( const ModoVis modo_vis, const bool usar_diferido );
+      void draw( const int modo_vis, const bool usar_diferido );
 
       // incrementa el valor del parámetro o grado de libertad actual
       void incrementaParamAct();

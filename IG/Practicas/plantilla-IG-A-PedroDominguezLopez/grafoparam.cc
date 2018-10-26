@@ -59,7 +59,7 @@ void GrafoParam::actualizarValorEfe( const unsigned iparam, const float valor_na
 // visualización del objeto Jerárquico con OpenGL,
 // mediante llamadas a los métodos 'draw' de los sub-objetos
 
-void GrafoParam::draw( const ModoVis p_modo_vis, const bool p_usar_diferido )
+void GrafoParam::draw( const int p_modo_vis, const bool p_usar_diferido )
 {
    // asegurarnos que está inicializado ok
 

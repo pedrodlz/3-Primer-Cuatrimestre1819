@@ -36,21 +36,23 @@ class Escena
    bool usar_diferido = true; //Si esta a true pinta la malla en modo diferido
                             // sino la pinta en modo inmediato
 
+   bool anima_activ = false;
+
    // Objetos de la escena
    //Cubo * cubo = nullptr ; // es importante inicializarlo a 'nullptr'
    //Tetraedro * tetraedro = nullptr ;
-   ObjPLY * obj_ply = nullptr;
+   /*ObjPLY * obj_ply = nullptr;
    ObjRevolucion * obj_rev1 = nullptr;
    ObjRevolucion * obj_rev2 = nullptr;
    ObjRevolucion * obj_rev3 = nullptr;
    Cilindro * cilindro = nullptr;
    Cono * cono = nullptr;
-   Esfera * esfera = nullptr;
+   Esfera * esfera = nullptr;*/
+   ObjJerarquico * objetojerarquico = nullptr;
 
-   // completar: añadir punteros a tetraedro u otros (práctica 1),
-   //            y a un objeto PLY y de revolución (práctica 2),
-   //           y a un objeto jerarquico (práctica 3).
-   // ......
+   // Gestion de las animaciones
+   void conmutarAnimaciones();
+
 
    public:
 
@@ -64,6 +66,9 @@ class Escena
 	// Interacción con la escena
 	bool teclaPulsada( unsigned char Tecla1, int x, int y ) ;
 	void teclaEspecial( int Tecla1, int x, int y );
+
+    // Actualizar el estado de los parámetros del objeto jerárquico
+    void mgeDesocupado();
 
 };
 #endif

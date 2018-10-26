@@ -23,15 +23,16 @@ Escena::Escena()
     // crear los objetos de las prácticas: Mallas o Jerárquicos....
     //cubo = new Cubo();
     //tetraedro = new Tetraedro();
-    obj_ply = new ObjPLY("./plys/beethoven.ply");
+    /*obj_ply = new ObjPLY("./plys/beethoven.ply");
     obj_rev1 = new ObjRevolucion("./plys/peon.ply",0);
     obj_rev2 = new ObjRevolucion("./plys/lata-pcue.ply",0);
     obj_rev3 = new ObjRevolucion("./plys/lata-psup.ply",0);
-    cilindro = new Cilindro(2,20);
-    cono = new Cono(2,20);
-    esfera = new Esfera(30,20);
+    cilindro = new Cilindro(4,20);
+    cono = new Cono(4,20);
+    esfera = new Esfera(30,20);*/
+    objetojerarquico = new ObjJerarquico();
 
-    num_objetos = 7 ; // se usa al pulsar la tecla 'O' (rotar objeto actual)
+    num_objetos = 1 ; // se usa al pulsar la tecla 'O' (rotar objeto actual)
 }
 
 //**************************************************************************
@@ -70,26 +71,21 @@ void Escena::dibujar_objeto_actual()
 
    switch( objeto_actual )
    {
-
        case 0:
+            if ( objetojerarquico != nullptr ){
+                objetojerarquico->draw(modo,usar_diferido);
+            }
+            break ;
+      /*case 0:
            if ( obj_ply != nullptr ){
                obj_ply->draw(modo,usar_diferido);
            }
            break ;
-          /*
-         if ( cubo != nullptr ){
-             cubo->draw(modo,usar_diferido);
-         }
-         break ;*/
       case 1:
           if ( obj_rev1 != nullptr ){
               obj_rev1->draw(modo,usar_diferido);
           }
           break ;
-        /*
-         if ( tetraedro != nullptr ){
-             tetraedro->draw(modo,usar_diferido);
-         }*/
       case 2:
           if ( obj_rev2 != nullptr ){
               obj_rev2->draw(modo,usar_diferido);
@@ -114,7 +110,7 @@ void Escena::dibujar_objeto_actual()
           if ( esfera != nullptr ){
               esfera->draw(modo,usar_diferido);
           }
-          break;
+          break;*/
       default:
          cout << "draw_object: el número de objeto actual (" << objeto_actual << ") es incorrecto." << endl ;
          break ;
@@ -164,6 +160,30 @@ bool Escena::teclaPulsada( unsigned char tecla, int x, int y )
         case 'V' :
             //Cambiar modo draw
             usar_diferido = !usar_diferido;
+            break ;
+        case 'P' :
+            // activar el parámetro siguiente al actual
+            objetojerarquico->siguienteParametro();
+            break ;
+        case 'A' :
+            // activa o desactiva las animaciones
+            conmutarAnimaciones();
+            break ;
+        case 'Z' :
+            // incrementa el valor del parámetro actual del objeto jerárquico
+            if(!anima_activ) objetojerarquico->incrementaParamAct();
+            break ;
+        case 'X' :
+            // decrementa el valor del parámetro actual del objeto jerárquico
+            if(!anima_activ) objetojerarquico->decrementaParamAct();
+            break ;
+        case '>' :
+            // incrementar el valor de incremento/decremento usado para las animaciones
+            objetojerarquico->acelerar();
+            break ;
+        case '<' :
+            // decrementar el valor de incremento/decremento usado para las animaciones
+            objetojerarquico->decelerar();
             break ;
         case 'Q' :
             // salir
@@ -240,4 +260,29 @@ void Escena::change_observer()
    glTranslatef( 0.0, 0.0, -Observer_distance );
    glRotatef( Observer_angle_x, 1.0 ,0.0, 0.0 );
    glRotatef( Observer_angle_y, 0.0, 1.0, 0.0 );
+}
+
+//**************************************************************************
+// Funcion encargada de activar/desactivar las animaciones
+//***************************************************************************
+
+void Escena::conmutarAnimaciones()
+{
+    anima_activ = !anima_activ;
+
+    if(anima_activ){
+        objetojerarquico->inicioAnimaciones();
+        glutIdleFunc( funcion_desocupado );
+    }
+    else glutIdleFunc( nullptr );
+}
+
+//**************************************************************************
+// Funcion encargada de actualizar el estado de los parámetros del objeto jerárquico
+//***************************************************************************
+
+void Escena::mgeDesocupado()
+{
+    objetojerarquico->actualizarEstado();
+    glutPostRedisplay();
 }

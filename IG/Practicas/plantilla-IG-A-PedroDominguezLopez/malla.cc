@@ -102,6 +102,8 @@ void ObjMallaIndexada::draw_Ajedrez()
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer( 3, GL_FLOAT, 0, vertices.data() ) ;
 
+    glColor3f(0,0,0);
+
     //Llamamos a la funcion para el primer vector
     glDrawElements( GL_TRIANGLES, triangulos_1.size()*3, GL_UNSIGNED_INT,
                     triangulos_1.data() );
@@ -340,8 +342,13 @@ void ObjRevolucion::crearMalla(const std::vector<Tupla3f> & perfil_original,
 Cilindro::Cilindro(const int num_vert_perfil, const int num_instancias_perf ){
 
     std::vector<Tupla3f> perfil;
-    perfil.push_back({0.5,-1,0});
-    perfil.push_back({0.5,1,0});
+    float radio = 0.5;
+    float altura = 1;
+
+    for(int i = 0; i < num_vert_perfil; i++){
+        float y = altura * ((float)i/(num_vert_perfil - 1));
+        perfil.push_back({radio,y,0});
+    }
 
     crearMalla(perfil,num_instancias_perf,0);
 }
@@ -355,10 +362,16 @@ Cilindro::Cilindro(const int num_vert_perfil, const int num_instancias_perf ){
 Cono::Cono(const int num_vert_perfil, const int num_instancias_perf ){
 
     std::vector<Tupla3f> perfil;
-    perfil.push_back({0.5,-0.75,0});
-    perfil.push_back({0,0.75,0});
+    float radio = 0.5;
+    float altura = 1;
 
-    crearMalla(perfil,num_instancias_perf,2);
+    for(int i = 0; i < num_vert_perfil; i++){
+        float x = (1 - (float) i / (num_vert_perfil - 1)) * radio;
+        float y = (-altura/radio)* x + altura;
+        perfil.push_back({x,y,0});
+    }
+
+    crearMalla(perfil,num_instancias_perf,0);
 }
 
 // *****************************************************************************
@@ -370,7 +383,7 @@ Cono::Cono(const int num_vert_perfil, const int num_instancias_perf ){
 Esfera::Esfera(const int num_vert_perfil, const int num_instancias_perf ){
 
     std::vector<Tupla3f> perfil;
-    int radio = 1;
+    float radio = 0.5;
 
     for (int i = 0; i < num_vert_perfil; i++) {
         float y = radio * (-1 + (float) 2 * i / (num_vert_perfil - 1));
