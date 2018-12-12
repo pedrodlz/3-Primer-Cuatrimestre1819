@@ -5,6 +5,8 @@
 // Archivo: jerarquico.h
 // -- declaraciones de clase para el objeto jerárquico de la práctica 3
 //
+// Autor: Pedro Domínguez López
+//
 // #############################################################################
 
 #ifndef JERARQUICO_H_INCLUDED
@@ -24,11 +26,15 @@ typedef std::chrono::duration<float,std::ratio<1,1>> Duracion_s ;
 class ObjJerarquico
 {
    public:
+
+      void copiar_material(Material opc_material);
+      void aplicar_prop();
+
       // inicialización: crear mallas indexadas, inicialización de parámetros
-      ObjJerarquico();
+      ObjJerarquico(GLenum numero_luz);
 
       // visualizar el objeto, usando los valores actuales de los parámetros
-      void draw( const int modo_vis, const bool usar_diferido );
+      void draw( const int modo_vis, const bool usar_diferido);
 
       // incrementa el valor del parámetro o grado de libertad actual
       void incrementaParamAct();
@@ -62,6 +68,9 @@ class ObjJerarquico
       void actualizarEstado();
 
    private:
+
+      Material propiedades;
+
       // puntero al objeto con el grafo de escena
       GrafoParam * objparam = nullptr ;
 

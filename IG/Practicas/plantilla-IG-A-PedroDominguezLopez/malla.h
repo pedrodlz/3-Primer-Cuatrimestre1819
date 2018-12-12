@@ -13,12 +13,23 @@
 #define OBJETOS_H_INCLUDED
 
 #include "aux.h"
+#include "CImg.h"
+
+using namespace cimg_library;
 
 // *****************************************************************************
 //
 // clase para objetos 3D (mallas indexadas)
 //
 // *****************************************************************************
+
+  struct Material
+  {Tupla4f me,  //Emision
+    ma,         //Ambiente
+    md,         //Difusa
+    ms;         //Especular
+    int e;      //Brillo
+  };
 
 class ObjMallaIndexada
 {
@@ -27,15 +38,19 @@ class ObjMallaIndexada
    // función que redibuja el objeto
    // está función llama a 'draw_MI' (modo inmediato)
    // o bien a 'draw_MD' (modo diferido, VBOs)
-   void draw(int modo_visu, bool usar_diferido) ;
+   void draw(int modo_visu, bool usar_diferido, GLenum numero_luz) ;
+   void copiar_material(Material opc_material);
+   void aplicar_prop();
+   void cargar_textura(std::string imagen);
+   void dibujar_cuadro();
 
    protected:
 
    // dibuja el objeto en modo inmediato
-   void draw_ModoInmediato();
+   void draw_ModoInmediato(GLenum numero_luz);
 
    // dibuja el objeto en modo diferido (usando VBOs)
-   void draw_ModoDiferido();
+   void draw_ModoDiferido(GLenum numero_luz);
 
    // dibuja el objeto en modo ajedrez
    void draw_Ajedrez();
@@ -49,7 +64,15 @@ class ObjMallaIndexada
    std::vector<Tupla3f> vertices ;   // tabla de coordenadas de vértices (una tupla por vértice, con tres floats)
    std::vector<Tupla3i> triangulos ; // una terna de 3 enteros por cada cara o triángulo
 
-   // completar: tabla de colores, tabla de normales de vértices
+   // tabla de normales de vértices y de caras
+   std::vector<Tupla3f> nv ;
+   std::vector<Tupla3f> nc ;
+
+   //Struct con las propiedades del material 
+   Material propiedades;
+
+   std::vector<GLfloat> texCoords;  //Tabla con las coordenadas de la textura
+   GLuint textura_id = 0;           //ID de la textura
 } ;
 
 // *****************************************************************************
@@ -97,13 +120,15 @@ class ObjRevolucion : public ObjMallaIndexada
 {
     public:
       ObjRevolucion(){};
-      //tapa_tipo-> 0:dos tapas, 1:tapa superior,2:tapa inferior,3:ninguna
-      ObjRevolucion( const std::string & nombre_ply_perfil,const int tapa_tipo );
-      ObjRevolucion( const std::vector<Tupla3f> & vertices_perfil,const int tapa_tipo );
+      ObjRevolucion( const std::string & nombre_ply_perfil,const bool tapa_sup, 
+        const bool tapa_inf  );
+      ObjRevolucion( const std::vector<Tupla3f> & vertices_perfil,const bool tapa_sup, 
+        const bool tapa_inf );
 
     protected:
         void crearMalla( const std::vector<Tupla3f> & perfil_original,
-            const int num_instancias_perf,const int tapa_tipo ) ;
+            const int num_instancias_perf,const bool tapa_sup, 
+        const bool tapa_inf  ) ;
     private:
         Tupla3f revolucionaPerfil( Tupla3f vertice_rotar,double alfa);
 } ;
@@ -125,5 +150,11 @@ class Esfera : public ObjRevolucion
     public:
         Esfera( const int num_vert_perfil, const int num_instancias_perf );
 } ;
+
+class Cuadro : public ObjMallaIndexada
+{
+    public:
+        Cuadro();
+};
 
 #endif

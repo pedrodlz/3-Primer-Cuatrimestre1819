@@ -5,19 +5,46 @@
 // Archivo: jerarquico.cc
 // -- implementación del objeto jerárquico de la práctica 3
 //
+// Autor: Pedro Domínguez López
+//
 // #############################################################################
 
 #include <chrono>
 
 #include "jerarquico.h"
 
+void ObjJerarquico::copiar_material(Material opc_material)
+{
+    propiedades = opc_material;
+}
+
+void ObjJerarquico::aplicar_prop()
+{
+    glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, propiedades.me ) ;
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, propiedades.ma);
+    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, propiedades.md );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, propiedades.ms );
+    glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, propiedades.e);
+
+    /*// asociar ME (emisión) con C :
+    glColorMaterial( GL_FRONT_AND_BACK, GL_EMISSION ) ;
+    // asociar MA (refl. ambiente) con C :
+    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT ) ;
+    // asociar MD (refl. difusa) con C :
+    glColorMaterial( GL_FRONT_AND_BACK, GL_DIFFUSE ) ;
+    // asociar MS (refl. pseudo-especular) con C :
+    glColorMaterial( GL_FRONT_AND_BACK, GL_SPECULAR ) ;
+    // asociar MA y MD con C :
+    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;*/
+}
+
 // -----------------------------------------------------------------------------
 // constructor: crea objparam y fija el valor inicial de los valores
 // de los parámetros (lineales y efectivos)
 
-ObjJerarquico::ObjJerarquico()
+ObjJerarquico::ObjJerarquico(GLenum numero_luz)
 {
-   objparam = new GrafoParam();
+   objparam = new GrafoParam(numero_luz);
 
    // inicializar el valor no acotado de cada parámetro a 0, e
    // iniciaizar asimismo su valor efectivo.
@@ -26,16 +53,18 @@ ObjJerarquico::ObjJerarquico()
       valores_na.push_back( 0.0 );
       objparam->actualizarValorEfe( i, valores_na[i] ) ;
    }
+
+   //objparam->calcular_normales();
 }
 
 // -----------------------------------------------------------------------------
 // visualización del objeto Jerárquico con OpenGL,
 // mediante llamadas a los métodos 'draw' del objeto
 
-void ObjJerarquico::draw( const int modo_vis, const bool usar_diferido )
+void ObjJerarquico::draw( const int modo_vis, const bool usar_diferido)
 {
    assert( objparam != nullptr );
-   objparam->draw( modo_vis, usar_diferido );
+   objparam->draw( modo_vis, usar_diferido);
 }
 
 

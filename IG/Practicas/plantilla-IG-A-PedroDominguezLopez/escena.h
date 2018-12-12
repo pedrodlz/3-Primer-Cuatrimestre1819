@@ -6,6 +6,7 @@
 #include "ejes.h"
 #include "malla.h"
 #include "jerarquico.h"
+#include "luz.h"
 
 class Escena
 {
@@ -39,16 +40,21 @@ class Escena
    bool anima_activ = false;
 
    // Objetos de la escena
-   //Cubo * cubo = nullptr ; // es importante inicializarlo a 'nullptr'
-   //Tetraedro * tetraedro = nullptr ;
-   /*ObjPLY * obj_ply = nullptr;
-   ObjRevolucion * obj_rev1 = nullptr;
-   ObjRevolucion * obj_rev2 = nullptr;
-   ObjRevolucion * obj_rev3 = nullptr;
+   /*Cubo * cubo = nullptr ; // es importante inicializarlo a 'nullptr'
+   Tetraedro * tetraedro = nullptr ;*/
+   ObjPLY * obj_ply = nullptr;
+   ObjRevolucion * obj_rev = nullptr;
    Cilindro * cilindro = nullptr;
    Cono * cono = nullptr;
-   Esfera * esfera = nullptr;*/
+   Esfera * esfera = nullptr;
    ObjJerarquico * objetojerarquico = nullptr;
+
+   GLenum numero_luz1 = GL_LIGHT0, numero_luz2 = GL_LIGHT1;
+
+   Luz * blanca = nullptr;
+   Luz * puntual = nullptr;
+
+   Cuadro * imagen = nullptr;
 
    // Gestion de las animaciones
    void conmutarAnimaciones();
