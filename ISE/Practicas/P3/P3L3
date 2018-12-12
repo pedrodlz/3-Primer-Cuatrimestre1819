@@ -1,0 +1,40 @@
+ZABBIX GET
+-----------
+
+(ejecutar ejemplo que hay en la web de zabbix en documentacion)
+
+yum install zabbix-get
+systemctl status zabbix-agent
+(ejemplo)
+
+
+ANSIBLE sirve para gestionar/controlar varias maquinas a la vez
+--------
+-automatizacion
+	+gestion de la configuracion: cuando tenemos un servidor y queremos llevarlo a un punto dado
+	+orquestacion: aprovisionar 
+
+lanza centos y ubuntu
+
+instalar ansible en el anfitrion
+apt-get install ansible
+cd /etc/ansible
+registrados todos los ordenandores a administrar estan en "hosts"
+otra forma de configurar ansible es con el fichero .ansible.cfg en la carpeta personal
+
+nano -w hosts			--- 	desde otra terminal ansible <host|grupo> -m ping
+																all
+[iseves]
+192.168.56.11 ansible_user=pedro 		(las ips de las maquinas)	-----  ansible iseves -m ping -u pedro
+
+---
+
+ansible iseves -a 'echo $PATH'		-- con la a para ejecutar comandos 
+
+
+para añadir llaves
+
+ssh-agent
+ssh-add <ubicacion llave privada>
+
+

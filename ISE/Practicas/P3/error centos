@@ -1,0 +1,2 @@
+agente zabbix en centos
+dar permisos porque hay un bug, hay que utilizar una utilidad para localizar en los logs (error selinux is preventing zabbix_agent...) 

@@ -1,0 +1,13 @@
+dos partes:
+
+1.Luz + materiales:
+
+en la escena tenemos unos objetos, y la luz es otro, una entidad propia hay que crear una clase (con encender/apagar, con identifcadores 1,2,3,...). recomienda hacer un metodo dibujar_luz llama a glposition.
+
+objeto mallaindexada tiene un vector de normales (en el constructor se calculan las normales y se rellena el vector) y un nuevo atributo material (tiene 4 componentes, un struct)
+
+calcular normales se hace O de n
+
+2.Texturas
+
+añadir otro atributo a malla indexada, coordenada de textura un array, que le pasaremos en el dibujar a opengl
