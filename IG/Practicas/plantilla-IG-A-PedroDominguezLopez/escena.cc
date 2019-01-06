@@ -4,6 +4,7 @@
 #include "escena.h"
 #include "malla.h" // objetos: Cubo y otros....
 #include "luz.h"
+#include "camara.h"
 
 //**************************************************************************
 // constructor de la escena (no puede usar ordenes de OpenGL)

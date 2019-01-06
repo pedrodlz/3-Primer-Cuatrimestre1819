@@ -461,21 +461,19 @@ Esfera::Esfera(const int num_vert_perfil, const int num_instancias_perf ){
 
 Cuadro::Cuadro()
 {
-    float tamanio = 1.5;
+    float tamanio = 2;
 
-    // inicializar la tabla de vértices
-    vertices =  { { -tamanio, -tamanio, 0 }, // 0
-                  { -tamanio, +tamanio, 0 }, // 1
-                  { +tamanio, -tamanio, 0 }, // 2
-                  { +tamanio, +tamanio, 0 }, // 3
-               };
+    vertices = { { -tamanio, -tamanio, 0}, //0
+                 { -tamanio, +tamanio, 0}, //1
+                 { +tamanio, +tamanio, 0}, //2
+                 { +tamanio, -tamanio, 0}};//3
 
-    triangulos = { { 0, 2, 1 }, { 2, 3, 1 }};
+    triangulos = { {0,3,2}, {0,2,1}};
 
-    texCoords = {0.0f, 1.0f,
+        texCoords = {0.0f, 1.0f,
                  0.0f, 0.0f,
-                 1.0f, 1.0f,
-                 1.0f, 0.0f};
+                 1.0f, 0.0f,
+                 1.0f, 1.0f};
 }
 
 void ObjMallaIndexada::cargar_textura(std::string imagen)
