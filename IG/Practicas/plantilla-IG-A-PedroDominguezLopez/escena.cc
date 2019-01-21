@@ -16,9 +16,17 @@ Escena::Escena()
 
     Front_plane = 0.1;
     Back_plane = 2000.0;
-    Observer_distance = 2.0;
-    Observer_angle_x  = 0.0 ;
-    Observer_angle_y  = 0.0 ;
+
+    Tupla3f eye, at;
+
+    eye = {0.0, 0.0, 50.0};
+    at = {0.0, 0.0, 0.0};
+
+    //Creacion de camaras
+    camaras[0] = new Camara(0, eye, at, Front_plane, Back_plane);
+
+    eye = {0.0, 0.0, 2.0};
+    camaras[1] = new Camara(1, eye, at, Front_plane, Back_plane);
 
     ejes.changeAxisSize( 5000 );
 
@@ -105,7 +113,8 @@ void Escena::dibujar_objeto_actual()
    // (2) dibujar el objeto actual usando método 'draw' del objeto asociado al
    // valor entero en 'objeto_actual'
 
-   switch( objeto_actual )
+  dibujaSeleccion();
+  /*switch( objeto_actual )
    {
       case 0:
         if ( obj_ply != nullptr ){
@@ -152,7 +161,7 @@ void Escena::dibujar_objeto_actual()
       default:
          cout << "draw_object: el número de objeto actual (" << objeto_actual << ") es incorrecto." << endl ;
          break ;
-   }
+   }*/
 }
 
 // **************************************************************************
@@ -169,6 +178,106 @@ void Escena::dibujar()
    ejes.draw();
   glEnable(GL_NORMALIZE);
 	dibujar_objeto_actual();
+}
+
+void Escena::colorearId(const int id )  // 0 ≤ ident < 2^24
+{
+    if (id >= 0){
+        const unsigned char
+            byteR = (id) % 0x100U,               // rojo = byte menos significativo
+            byteG = (id / 0x100U ) % 0x100U,     // verde = byte intermedio
+            byteB = (id / 0x10000U ) % 0x100U;   // azul = byte más significativo
+
+        glColor3ub( byteR, byteG, byteB );      // cambio de color en OpenGL.
+    }
+}
+
+int Escena::obtenerId( int xpix, int ypix )
+{
+    unsigned char bytes[3] ; // para guardar los tres bytes
+
+    // leer los 3 bytes del frame-buffer
+    glReadPixels( xpix,ypix, 1,1, GL_RGB,GL_UNSIGNED_BYTE, (void *)bytes);   // .....
+
+    // reconstruir el identificador y devolverlo:
+    return bytes[0] +  (0x100U*bytes[1]) + (0x10000U*bytes[2]);
+}
+
+void Escena::dibujaSeleccion()
+{
+  glDisable(GL_DITHER);
+  for (int i = 0; i < num_objetos; ++i){
+      glPushMatrix () ;
+      colorearId(i*10000);
+      switch(i){ //Un color para cada objeto
+        case 0:     
+          if ( obj_ply != nullptr ){
+              glTranslatef(2,0,-2);
+              glScalef( 0.2, 0.2, 0.2 );
+              obj_ply->aplicar_prop();
+              obj_ply->draw(modo,usar_diferido,numero_luz1);
+          }
+          break;
+        case 1:
+          if ( imagen != nullptr ){
+              glTranslatef(-2,0,-2);
+              glScalef( 0.4, 0.4,0.4 );
+              imagen->draw(modo,usar_diferido,numero_luz1);
+              imagen->cargar_textura("./img.jpeg");
+          }
+          break;
+        case 2:
+          if ( esfera != nullptr ){
+              glTranslatef( 0, 0, 2 );
+              esfera->aplicar_prop();
+              esfera->draw(modo,usar_diferido,numero_luz1);
+          }
+          break;
+        case 3:
+          if ( obj_rev != nullptr ){
+              glScalef( 0.6, 0.6, 0.6 );
+              obj_rev->aplicar_prop();
+              obj_rev->draw(modo,usar_diferido,numero_luz1);
+          }
+          break;
+        case 4:
+          if ( cilindro != nullptr ){
+              glTranslatef(2,-0.5,0);
+              cilindro->aplicar_prop();
+              cilindro->draw(modo,usar_diferido,numero_luz1);
+          }
+          break;
+        case 5:
+          if ( cono != nullptr ){
+              glTranslatef(-2,-0.5,0);
+              cono->aplicar_prop();
+              cono->draw(modo,usar_diferido,numero_luz1);
+          }
+          break;
+        case 6:
+          if ( objetojerarquico != nullptr ){
+              glTranslatef(-0.25,0,-2);
+              glRotatef(-90,0,1,0);
+              glScalef( 0.2, 0.2, 0.2 );
+              objetojerarquico->aplicar_prop();
+              objetojerarquico->draw(modo,usar_diferido);
+          }
+          break;          
+      }
+      glPopMatrix();
+    }
+  glEnable(GL_DITHER);
+}
+
+void Escena::pick(GLint x, GLint y)
+{
+    glDisable( GL_LIGHTING );
+    glDisable( GL_TEXTURE_2D );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    int ident = obtenerId(x, y);
+
+    std::cout << "ID: " << ident << std::endl;
 }
 
 //**************************************************************************
@@ -261,22 +370,30 @@ void Escena::teclaEspecial( int Tecla1, int x, int y )
    switch ( Tecla1 )
    {
 	   case GLUT_KEY_LEFT:
-         Observer_angle_y-- ;
+         camaras[camara_activa]->mod_y(false) ;
          break;
 	   case GLUT_KEY_RIGHT:
-         Observer_angle_y++ ;
+         camaras[camara_activa]->mod_y(true) ;
          break;
 	   case GLUT_KEY_UP:
-         Observer_angle_x-- ;
+         camaras[camara_activa]->mod_x(false) ;
          break;
 	   case GLUT_KEY_DOWN:
-         Observer_angle_x++ ;
+         camaras[camara_activa]->mod_x(true) ;
          break;
 	   case GLUT_KEY_PAGE_UP:
-         Observer_distance *=1.2 ;
+         camaras[camara_activa]->zoom(1.1) ;
          break;
 	   case GLUT_KEY_PAGE_DOWN:
-         Observer_distance /= 1.2 ;
+         camaras[camara_activa]->zoom(0.9) ;
+         break;
+     case GLUT_KEY_F1:
+         camara_activa = 0;
+         change_projection( float(Width)/float(Height) );
+         break;
+     case GLUT_KEY_F2:
+         camara_activa = 1;
+         change_projection( float(Width)/float(Height) );
          break;
 	}
 
@@ -291,12 +408,13 @@ void Escena::teclaEspecial( int Tecla1, int x, int y )
 //***************************************************************************
 
 void Escena::change_projection( const float ratio_xy )
-{
-   glMatrixMode( GL_PROJECTION );
-   glLoadIdentity();
-   const float wy = 0.84*Front_plane,
-   wx = ratio_xy*wy ;
-   glFrustum( -wx, +wx, -wy, +wy, Front_plane, Back_plane );
+{ 
+    const float wy = 0.84*Front_plane,
+      wx = ratio_xy*wy ;
+
+    std::cout<<"CAMARA ACTIVA: " << camara_activa << std::endl;
+    camaras[camara_activa]->setVentana(-wx,+wx,-wy,+wy);
+    camaras[camara_activa]->setProyeccion();
 }
 //**************************************************************************
 // Funcion que se invoca cuando cambia el tamaño de la ventana
@@ -317,11 +435,32 @@ void Escena::redimensionar( int newWidth, int newHeight )
 void Escena::change_observer()
 {
    // posicion del observador
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
-   glTranslatef( 0.0, 0.0, -Observer_distance );
-   glRotatef( Observer_angle_x, 1.0 ,0.0, 0.0 );
-   glRotatef( Observer_angle_y, 0.0, 1.0, 0.0 );
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  camaras[camara_activa]->setObserver();
+}
+
+
+//**************************************************************************
+// Funcion para actualizar la camara a partir del desplazamiento del raton
+//***************************************************************************
+
+void Escena::raton_movido(int x, int y)
+{
+    std::cout << "ESTADO: " << estado_raton << std::endl;
+
+    if(estado_raton == MOVIENDO_CAMARA){
+      camaras[camara_activa]->girar(x,y);
+    }
+}
+
+//**************************************************************************
+// Funcion para hacer zoom en la camara
+//***************************************************************************
+
+void Escena::zoom(float factor)
+{
+    camaras[camara_activa]->zoom(factor);
 }
 
 //**************************************************************************

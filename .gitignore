@@ -6,4 +6,5 @@
 *.tar.gz
 *.tar.xz
 *.o
-./DDSI/DDSI_Practicas_1819
+DDSI/DDSI_Practicas_1819/
+MC/Practicas/MC_Practica2_1819/

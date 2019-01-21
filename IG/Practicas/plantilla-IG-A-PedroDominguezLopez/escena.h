@@ -7,18 +7,19 @@
 #include "malla.h"
 #include "jerarquico.h"
 #include "luz.h"
+#include "camara.h"
+
+enum EstadosRaton{
+  MOVIENDO_CAMARA,
+  CAMARA_QUIETA,
+  ZOOM
+};
 
 class Escena
 {
-
    private:
 
    Ejes ejes;
-
-   // variables que definen la posicion de la camara en coordenadas polares
-   GLfloat Observer_distance;
-   GLfloat Observer_angle_x;
-   GLfloat Observer_angle_y;
 
    // variables que controlan la ventana y la transformacion de perspectiva
    GLfloat Width, Height, Front_plane, Back_plane;
@@ -56,8 +57,15 @@ class Escena
 
    Cuadro * imagen = nullptr;
 
+   //Camaras
+   int camara_activa = 1;
+   Camara * camaras[2] = {nullptr,nullptr};
+
    // Gestion de las animaciones
    void conmutarAnimaciones();
+
+   void colorearId(const int ident );
+   int obtenerId( int xpix, int ypix );
 
 
    public:
@@ -73,8 +81,18 @@ class Escena
 	bool teclaPulsada( unsigned char Tecla1, int x, int y ) ;
 	void teclaEspecial( int Tecla1, int x, int y );
 
-    // Actualizar el estado de los parámetros del objeto jerárquico
-    void mgeDesocupado();
+  // Actualizar el estado de los parámetros del objeto jerárquico
+  void mgeDesocupado();
 
+  EstadosRaton estado_raton = CAMARA_QUIETA;
+
+  void zoom(float factor);
+
+  //Gestion del raton
+  void raton_movido(int x, int y);
+
+  //Seleccion de objetos
+  void dibujaSeleccion();
+  void pick(GLint x, GLint y);
 };
 #endif

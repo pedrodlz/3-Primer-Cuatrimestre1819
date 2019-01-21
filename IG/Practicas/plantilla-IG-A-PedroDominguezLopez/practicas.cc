@@ -13,7 +13,6 @@
 // variable que contiene un puntero a la escena
 Escena *escena = nullptr ;
 
-
 //***************************************************************************
 // Funcion principal que redibuja la escena
 //
@@ -99,6 +98,32 @@ void funcion_desocupado()
 	if(escena != nullptr) escena->mgeDesocupado();
 }
 
+void click_raton(GLint boton, GLint estado, GLint x, GLint y)
+{
+   if (boton == GLUT_RIGHT_BUTTON){
+      if(estado == GLUT_DOWN) {
+         escena->estado_raton = MOVIENDO_CAMARA;
+      }
+      else escena->estado_raton = CAMARA_QUIETA;
+   }
+   else if(boton == GLUT_LEFT_BUTTON){
+      if(estado == GLUT_DOWN){
+         escena->pick(x,y);
+      }
+   }
+   else if ( boton == 3 && estado == GLUT_UP ){
+      escena->zoom(0.9);
+   }
+   else if( boton == 4 && estado == GLUT_UP )
+   {
+      escena->zoom(1.1);
+   }
+}
+
+void mov_raton (int x, int y) {
+   escena->raton_movido(x,y);
+}
+
 //***************************************************************************
 // Programa principal
 //
@@ -164,6 +189,9 @@ int main( int argc, char **argv )
    escena->inicializar( UI_window_width, UI_window_height );
 
    // TEST
+
+   glutMouseFunc(click_raton);
+   glutMotionFunc(mov_raton);
 
    // ejecutar del bucle de eventos
    glutMainLoop();
